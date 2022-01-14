@@ -7,7 +7,7 @@ const pool = require('./db')
 app.use(cors())
 app.use(express.json())
 
-//CREATE USER
+//CREATE USER ENDPOINT
 app.post('/users', async (req, res) => {
   try {
     //Values to add
@@ -26,7 +26,7 @@ app.post('/users', async (req, res) => {
   }
 })
 
-//GET USERS
+//GET ALL USERS ENDPOINT
 
 app.get('/users', async (req, res) => {
   try {
@@ -39,7 +39,7 @@ app.get('/users', async (req, res) => {
   }
 })
 
-//GET SINGLE USER
+//GET SINGLE USER ENDPOINT
 
 app.get('/users/:id', async (req, res) => {
   try {
@@ -52,6 +52,24 @@ app.get('/users/:id', async (req, res) => {
 })
 
 //UPDATE USER
+app.put('/users/:id', async (req, res) => {
+  try {
+    const { id } = req.params
+    const values = [req.body.name, req.body.email, req.body.age, id]
+
+    //QUERY
+    const updateQuery = `UPDATE users SET name=$1,email=$2,age=$3
+    WHERE user_id=$4 RETURNING *`
+
+    //MANIPULATE DATABASE
+    const updatedUser = await pool.query(updateQuery, values)
+
+    //SETTING RESPONCE
+    res.json(updatedUser.rows[0])
+  } catch (err) {
+    console.error(err.message)
+  }
+})
 
 //DELETE USER
 

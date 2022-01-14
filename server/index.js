@@ -10,19 +10,34 @@ app.use(express.json())
 //CREATE USER
 app.post('/users', async (req, res) => {
   try {
+    //Values to add
     const values = [req.body.name, req.body.email, req.body.age]
-    const newUser = await pool.query(
-      `INSERT INTO users(name,email,age)
-    VALUES($1,$2,$3)`,
-      values
-    )
-    res.json(newUser)
+    //Insertion query
+    const insertQuery = `INSERT INTO users(name,email,age)
+    VALUES($1,$2,$3) RETURNING *`
+
+    //insertion
+    const newUser = await pool.query(insertQuery, values)
+
+    //Setting responce
+    res.json(newUser.rows[0])
   } catch (err) {
     console.error(err.message)
   }
 })
 
 //GET USERS
+
+app.get('/users', async (req, res) => {
+  try {
+    const allUsers = await pool.query('SELECT * FROM users')
+
+    //Setting responce
+    res.json(allUsers.rows)
+  } catch (err) {
+    console.error(err.message)
+  }
+})
 
 //GET SINGLE USER
 

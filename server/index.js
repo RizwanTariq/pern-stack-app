@@ -73,6 +73,19 @@ app.put('/users/:id', async (req, res) => {
 
 //DELETE USER
 
+app.delete('/users/:id', async (req, res) => {
+  try {
+    const { id } = req.params
+    const deletedUser = await pool.query(
+      'DELETE FROM users WHERE user_id=$1 RETURNING *',
+      [id]
+    )
+    res.json(deletedUser.rows[0])
+  } catch (err) {
+    console.error(err.message)
+  }
+})
+
 app.listen(5000, () => {
   console.log('Server running on port 5000')
 })
